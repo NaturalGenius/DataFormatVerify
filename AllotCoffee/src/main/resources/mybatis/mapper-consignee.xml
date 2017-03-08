@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!--用来测试基本查询  -->
+  <mapper namespace="com.joyworks.dao.ConsigneeDao">
+  		<resultMap type="consignee" id="baseMap">
+  			<id column="id" property="id"/>
+  			<result column="name" property="name"/>
+  			<result column="region" property="region"/>
+  			<result column="address" property="address"/>
+  			<result column="tel" property="tel"/>
+  			<result column="tel" property="tel"/>
+  			<result column="email" property="email"/>
+  			<result column="postcode" property="postcode"/>
+  			<result column="create_time" property="createTime"/>
+  			<result column="modify_time" property="modifyTime"/>
+  		</resultMap>
+  		<insert id="saveConsignee" parameterType="consignee">
+  			insert into tbl_consignee(`name`, region ,address, tel, email, postcode,create_time,modify_time)
+  			values(#{name}, #{region},#{address},#{tel},#{email},#{postcode},#{createTime},#{modifyTime})
+  		</insert>
+  		
+  		<select id="getToatlCount" resultType="int">
+  			select count(*) from tbl_consignee
+  		</select>
+  		
+  		<select id="listPageConsigneeMessage" resultMap="baseMap">
+  			select id, name, region ,address, tel, email, 
+  			postcode, create_time, modify_time from tbl_consignee 
+  			limit #{start}, #{pageSize}
+  		</select>
+  </mapper>
