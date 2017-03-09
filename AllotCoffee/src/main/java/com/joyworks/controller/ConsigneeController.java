@@ -1,6 +1,5 @@
 package com.joyworks.controller;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +19,7 @@ import com.joyworks.util.VerifyFieldUtil;
 /**
  * 处理收货人相关请求的控制器
  * 
- * @author 朱亮
+ * @author zhuliang
  *
  */
 @Controller
@@ -59,26 +58,28 @@ public class ConsigneeController {
 	 */
 	@RequestMapping("/getCoffee")
 	@ResponseBody
-	public void getCoffee(Consignee consignee, HttpServletResponse response) {
+	public String getCoffee(Consignee consignee, HttpServletResponse response) {
 		// 验证用户传入数据格式是否正确,message等于null说明 数据正确
 		String message = VerifyFieldUtil.verifyConsigneeMessage(consignee);
-		response.setContentType("text/html;charset=UTF-8");
+		//response.setContentType("text/html;charset=UTF-8");
 		if (message == null) {
 
 			try {
 				boolean flag = consigneeService.getCoffee(consignee);
 				if (flag) {
-					try {
-						response.getWriter().write("成功获得咖啡");
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+//					try {
+//						response.getWriter().write("成功获得咖啡");
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+					return "成功获得咖啡";
 				} else {
-					try {
-						response.getWriter().write("咖啡已售完");
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+//					try {
+//						response.getWriter().write("咖啡已售完");
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+					return "咖啡已售完";
 				}
 			} catch (RuntimeException e) {
 				String recipient = "zhuliang6520@163.com";
@@ -87,20 +88,21 @@ public class ConsigneeController {
 				String content = info+"数据库出现故障，请速处理";
 				//出异常说明数据库连接失败，需要发送邮件告知管理者
 				sendMailService.send(recipient, subject, content);
-				try {
-					response.getWriter().write("操作失败，请重新操作");
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
+//				try {
+//					response.getWriter().write("操作失败，请重新操作");
+//				} catch (IOException e1) {
+//					e1.printStackTrace();
+//				}
+				return "操作失败，请重新操作";
 			}
 			
 		} else {
-			try {
-				response.getWriter().write(message);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+//			try {
+//				response.getWriter().write(message);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+			return message;
 		}
 	}
 
