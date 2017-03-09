@@ -4,7 +4,7 @@ import com.joyworks.entity.Consignee;
 import com.joyworks.entity.Page;
 /**
  * 分配咖啡的接口
- * @author joyworks
+ * @author zhuliang
  *
  */
 public interface ConsigneeService {
