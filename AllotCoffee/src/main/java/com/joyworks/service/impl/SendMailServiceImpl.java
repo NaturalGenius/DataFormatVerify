@@ -11,7 +11,6 @@ import com.joyworks.service.SendMailService;
 
 @Service
 public class SendMailServiceImpl implements SendMailService {
-
 	@Autowired
 	private MailSender mailSender;
 

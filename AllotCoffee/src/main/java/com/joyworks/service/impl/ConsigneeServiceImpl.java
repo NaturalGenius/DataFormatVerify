@@ -3,6 +3,7 @@ package com.joyworks.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ import redis.clients.jedis.Transaction;
 @Service
 public class ConsigneeServiceImpl implements ConsigneeService {
 
+	private static final Logger logger = Logger.getLogger(ConsigneeServiceImpl.class);
+	
 	@Autowired
 	private JedisPool jedisPool;
 	
@@ -29,48 +32,49 @@ public class ConsigneeServiceImpl implements ConsigneeService {
 	@Override
 	public boolean getCoffee(Consignee consignee) {
 		
-		Jedis jedis = jedisPool.getResource();
-		String coffeeCount = CommonFiledConstant.COFFEE_COUNT;
-		if (jedis != null) {
-
-			jedis.watch("coffeecount");
-			Integer num = Integer.parseInt(jedis.get(coffeeCount));
-		
-			if (num.intValue() == 0) {
-				jedis.unwatch();
-				jedis.close();
-				return false;
-			} else {
-				while (true) {
-					num = Integer.parseInt(jedis.get(coffeeCount));
-					if (num.intValue() == 0) {
-						jedis.unwatch();
-						jedis.close();
-						return false;
-					} else {
-						Transaction transaction = jedis.multi();
-						transaction.decr(coffeeCount);
-						List<Object> list = transaction.exec();
-						if (list != null) {
-							// 保存用户信息
-							//1.用户第一次保存时，将其的创建和修改时间设置为相同的
-							consignee.setCreateTime(new Date());
-							consignee.setModifyTime(new Date());
-							//保存用户信息到数据库中
-							try {
-								consineeDao.saveConsignee(consignee);
-								jedis.close();
-								return true;
-							} catch (Exception e) {
-								jedis.incr(coffeeCount);
-								jedis.close();
-								throw new DatabaseConnectFailedException(ExceptionMessage.MYSQL_DOWN);
+		try(Jedis jedis = jedisPool.getResource();) {
+			String coffeeCount = CommonFiledConstant.COFFEE_COUNT;
+			if (jedis != null) {
+				jedis.watch("coffeecount");
+				Integer num = Integer.parseInt(jedis.get(coffeeCount));
+			
+				if (num.intValue() == 0) {
+					jedis.unwatch();
+					jedis.close();
+					return false;
+				} else {
+					while (true) {
+						num = Integer.parseInt(jedis.get(coffeeCount));
+						if (num.intValue() == 0) {
+							jedis.unwatch();
+							jedis.close();
+							return false;
+						} else {
+							Transaction transaction = jedis.multi();
+							
+							transaction.decr(coffeeCount);
+							List<Object> list = transaction.exec();
+							if (list != null) {
+								// 保存用户信息
+								//1.用户第一次保存时，将其的创建和修改时间设置为相同的
+								consignee.setCreateTime(new Date());
+								consignee.setModifyTime(new Date());
+								//保存用户信息到数据库中
+								try {
+									consineeDao.saveConsignee(consignee);
+									return true;
+								} catch (Exception e) {
+									logger.debug(ExceptionMessage.MYSQL_DOWN);
+									throw new DatabaseConnectFailedException(ExceptionMessage.MYSQL_DOWN);
+								}
 							}
 						}
 					}
 				}
 			}
 		}
+		
+		logger.debug(ExceptionMessage.REDIS_DOWN);
 		throw new DatabaseConnectFailedException(ExceptionMessage.REDIS_DOWN);
 	}
 	@Override
