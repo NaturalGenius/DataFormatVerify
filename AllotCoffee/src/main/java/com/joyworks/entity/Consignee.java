@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * 收货人信息类
  * 
- * @author joyworks
+ * @author zhuliang
  *
  */
 public class Consignee implements Serializable {
@@ -21,7 +21,7 @@ public class Consignee implements Serializable {
 	private String email;// 邮箱
 	private String postcode;// 邮编
 	private Date createTime;// 添加收货人信息时间
-	private Date modifyTime;// 修改收货人时间
+	private Date modifyTime;// 修改收货人信息时间
 
 	public Consignee() {
 		super();

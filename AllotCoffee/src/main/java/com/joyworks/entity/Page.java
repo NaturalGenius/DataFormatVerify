@@ -21,8 +21,7 @@ public class Page<T> {
 		int defaultPageNo = 1;
 		try {
 			defaultPageNo = Integer.parseInt(pageNo);
-		} catch (NumberFormatException e) {
-		}
+		} catch (NumberFormatException e) {}
 		this.pageNo = defaultPageNo;
 		this.totalRecoards = totalRecoards;
 		this.pageSize = pageSize;
