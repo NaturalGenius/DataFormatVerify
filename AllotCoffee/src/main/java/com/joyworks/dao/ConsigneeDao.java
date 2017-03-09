@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.joyworks.entity.Consignee;
 
 /**
- * 此接口用户持久化收货人相关的信息
+ * 此接口用于持久化收货人相关的信息
  * @author joyworks
  *
  */
